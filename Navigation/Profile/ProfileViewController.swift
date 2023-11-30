@@ -11,16 +11,21 @@ class ProfileViewController: UIViewController {
     
     let profileHeaderView = ProfileHeaderView()
 
+    let button: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("button", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .orange
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        setView()
-    }
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        profileHeaderView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
-        
+        profileHeaderView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileHeaderView)
+        view.addSubview(button)
+        setView()
     }
     
 
@@ -28,8 +33,23 @@ class ProfileViewController: UIViewController {
     // MARK: - Navigation
 
     func setView() {
+        
+        let safeAreaLayoutGuide = view.safeAreaLayoutGuide
+        
         title = "Profile"
         view.backgroundColor = .lightGray
+        
+        NSLayoutConstraint.activate([
+            profileHeaderView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+            profileHeaderView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+            profileHeaderView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+            profileHeaderView.heightAnchor.constraint(equalToConstant: 220),
+            
+            button.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+            button.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+            button.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)
+            
+        ])
         
     }
 
