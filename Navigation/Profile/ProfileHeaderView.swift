@@ -35,9 +35,19 @@ class ProfileHeaderView: UIView {
     let statusTextField: UITextField = {
         let statusTextField = UITextField()
         statusTextField.translatesAutoresizingMaskIntoConstraints = false
-        statusTextField.placeholder = "Waiting for something..."
-        statusTextField.font = .systemFont(ofSize: 14, weight: .regular)
-        statusTextField.textColor = .white
+        statusTextField.placeholder = "Write status"
+        statusTextField.textColor = .black
+        statusTextField.font = .systemFont(ofSize: 15, weight: .regular)
+        statusTextField.backgroundColor = .white
+        statusTextField.layer.borderWidth = 1
+        statusTextField.layer.borderColor = CGColor(red: 0/255,
+                                                      green: 0/255,
+                                                      blue: 0/255,
+                                                      alpha: 1)
+        statusTextField.layer.cornerRadius = 12
+        let spacerView = UIView(frame:CGRect(x:0, y:0, width:10, height:10))
+        statusTextField.leftViewMode = .always
+        statusTextField.leftView = spacerView
         return statusTextField
     }()
     let setStatusButton: UIButton = {
@@ -59,9 +69,10 @@ class ProfileHeaderView: UIView {
     }()
     private var statusLabel: UILabel = {
         let statusLabel = UILabel()
-        statusLabel.text = ""
-        statusLabel.isHidden = true
+        statusLabel.text = "Waiting for something..."
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
+        statusLabel.font = .systemFont(ofSize: 14, weight: .regular)
+        statusLabel.textColor = .gray
         return statusLabel
     }()
     
@@ -69,9 +80,9 @@ class ProfileHeaderView: UIView {
         super.init(frame: frame)
         self.addSubview(avatarImageView)
         self.addSubview(fullNameLabel)
-        self.addSubview(statusTextField)
-        self.addSubview(setStatusButton)
         self.addSubview(statusLabel)
+        self.addSubview(setStatusButton)
+        self.addSubview(statusTextField)
         setStatusButton.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
         statusTextField.addTarget(self, action: #selector(statusTextChanged(_:)), for: .editingChanged)
         
@@ -110,7 +121,7 @@ class ProfileHeaderView: UIView {
                                             constant: 25),
             setStatusButton.topAnchor.constraint(equalTo:
                                             avatarImageView.bottomAnchor,
-                                            constant: 16),
+                                            constant: 37),
             setStatusButton.trailingAnchor.constraint(equalTo:
                                             self.trailingAnchor,
                                             constant: -16),
@@ -118,20 +129,24 @@ class ProfileHeaderView: UIView {
                                             self.leadingAnchor,
                                             constant: 16),
             setStatusButton.heightAnchor.constraint(equalToConstant: 50),
-            statusTextField.bottomAnchor.constraint(equalTo:
+            statusLabel.bottomAnchor.constraint(equalTo:
                                             setStatusButton.topAnchor,
-                                            constant: -34),
-            statusTextField.leadingAnchor.constraint(equalTo:
+                                            constant: -55),
+            statusLabel.leadingAnchor.constraint(equalTo:
                                             avatarImageView.trailingAnchor,
                                             constant: 25),
-            statusLabel.topAnchor.constraint(equalTo: setStatusButton.bottomAnchor, constant: 20),
-            statusLabel.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor)
+            
+            statusTextField.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 5),
+            statusTextField.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 25),
+            statusTextField.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            statusTextField.heightAnchor.constraint(equalToConstant: 40)
+            
         ])
     }
     
     @objc func buttonPressed() {
         print(statusLabel.text)
-        statusLabel.isHidden = false
+
     }
     
     @objc func statusTextChanged(_ textField: UITextField) {
