@@ -32,12 +32,12 @@ class ProfileHeaderView: UIView {
         nameLabel.textColor = .black
         return nameLabel
     }()
-    let textField: UITextField = {
-        let textField = UITextField()
+    let statusLabel: UILabel = {
+        let textField = UILabel()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "Waiting for something..."
+        textField.text = "Waiting for something..."
         textField.font = .systemFont(ofSize: 14, weight: .regular)
-        textField.textColor = .white
+        textField.textColor = .gray
         return textField
     }()
     let button: UIButton = {
@@ -53,6 +53,25 @@ class ProfileHeaderView: UIView {
                                            alpha: 1)
         button.layer.shadowOpacity = 0.7
         return button
+    }()
+    let textField: UITextField = {
+        let textField = UITextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.placeholder = "Write status"
+        textField.textColor = .black
+        textField.font = .systemFont(ofSize: 15, weight: .regular)
+        textField.backgroundColor = .white
+        textField.layer.borderWidth = 1
+        textField.layer.borderColor = CGColor(red: 0/255,
+                                              green: 0/255,
+                                              blue: 0/255,
+                                              alpha: 1)
+        textField.layer.cornerRadius = 12
+        let spacerView = UIView(frame:CGRect(x:0, y:0, width:10, height:10))
+        textField.leftViewMode = .always
+        textField.leftView = spacerView
+        
+        return textField
     }()
     private var statusText: String = ""
     
@@ -98,7 +117,7 @@ class ProfileHeaderView: UIView {
         NSLayoutConstraint.activate([
             button.topAnchor.constraint(equalTo:
                                             profileImage.bottomAnchor,
-                                            constant: 16),
+                                            constant: 40),
             button.trailingAnchor.constraint(equalTo:
                                             self.trailingAnchor,
                                             constant: -16),
@@ -109,19 +128,25 @@ class ProfileHeaderView: UIView {
             
         ])
         textField.addTarget(self, action: #selector(statusTextChanged(_:)), for: .editingChanged)
+        self.addSubview(statusLabel)
         self.addSubview(textField)
         NSLayoutConstraint.activate([
-            textField.bottomAnchor.constraint(equalTo:
+            statusLabel.bottomAnchor.constraint(equalTo:
                                             button.topAnchor,
-                                            constant: -34),
-            textField.leadingAnchor.constraint(equalTo:
+                                            constant: -58),
+            statusLabel.leadingAnchor.constraint(equalTo:
                                             profileImage.trailingAnchor,
-                                            constant: 25)
+                                            constant: 25),
+            textField.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 5),
+            textField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            textField.heightAnchor.constraint(equalToConstant: 40),
+            textField.leadingAnchor.constraint(equalTo: profileImage.trailingAnchor,
+                                               constant: 25)
         ])
     }
     
     @objc func buttonPressed() {
-        print(statusText)
+        statusLabel.text = statusText
     }
     
     @objc func statusTextChanged(_ textField: UITextField) {
