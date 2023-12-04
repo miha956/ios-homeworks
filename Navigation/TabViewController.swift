@@ -18,7 +18,7 @@ class TabViewController: UITabBarController {
     private func setTabBar() {
         
         let navigationController = UINavigationController(rootViewController: FeedViewController())
-        let navigationController2 = UINavigationController(rootViewController: ProfileViewController())
+        let navigationController2 = UINavigationController(rootViewController: LogInViewController())
         
         let navBarAppearance = UINavigationBarAppearance()
         navBarAppearance.shadowColor = UIColor(red: 60/255, green: 60/255, blue: 0/255, alpha: 0.29)
