@@ -34,12 +34,16 @@ class LogInViewController: UIViewController {
         let loginTextField = UITextField()
         loginTextField.translatesAutoresizingMaskIntoConstraints = false
         loginTextField.layer.sublayerTransform = CATransform3DMakeTranslation(10, 0, 0)
+        loginTextField.textColor = .black
+        loginTextField.font = .systemFont(ofSize: 16)
+        loginTextField.tintColor = .vk
+        loginTextField.autocapitalizationType = .none
         loginTextField.placeholder = "Email or phone"
         loginTextField.layer.borderWidth = 0.5
         loginTextField.layer.cornerRadius = 10
         loginTextField.layer.masksToBounds = true
         loginTextField.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        loginTextField.layer.borderColor = CGColor(gray: 0.8, alpha: 1)
+        loginTextField.layer.borderColor = UIColor.lightGray.cgColor
         
         return loginTextField
     }()
@@ -47,13 +51,17 @@ class LogInViewController: UIViewController {
         let passwordTextField = UITextField()
         passwordTextField.translatesAutoresizingMaskIntoConstraints = false
         passwordTextField.layer.sublayerTransform = CATransform3DMakeTranslation(10, 0, 0)
+        passwordTextField.textColor = .black
+        passwordTextField.font = .systemFont(ofSize: 16)
+        passwordTextField.tintColor = .vk
+        passwordTextField.autocapitalizationType = .none
         passwordTextField.placeholder = "Password"
         passwordTextField.isSecureTextEntry = true
         passwordTextField.layer.borderWidth = 0.5
         passwordTextField.layer.cornerRadius = 10
         passwordTextField.layer.masksToBounds = true
         passwordTextField.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-        passwordTextField.layer.borderColor = CGColor(gray: 0.8, alpha: 1)
+        passwordTextField.layer.borderColor = UIColor.lightGray.cgColor
         return passwordTextField
     }()
     private lazy var logInStackview: UIStackView = {
@@ -65,11 +73,10 @@ class LogInViewController: UIViewController {
         logInStackview.backgroundColor = .systemGray6
         logInStackview.alignment = .fill
 
-        
         return logInStackview
     }()
     private lazy var logInButton: UIButton = {
-        let logInButton = UIButton(type: .system)
+        let logInButton = UIButton()
         logInButton.tintColor = .white
         logInButton.layer.cornerRadius = 10
         logInButton.clipsToBounds = true
