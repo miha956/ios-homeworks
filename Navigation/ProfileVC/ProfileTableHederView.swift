@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class ProfileHeaderView: UIView {
+class ProfileHeaderView: UITableViewHeaderFooterView {
     
     let avatarImageView: UIImageView = {
         let avatarImageView = UIImageView()
@@ -21,7 +21,6 @@ class ProfileHeaderView: UIView {
                                                  blue: 255/255,
                                                  alpha: 1)
         avatarImageView.clipsToBounds = true
-        //profileImage.frame = CGRect(x: 16, y: 0, width: 100, height: 100)
         return avatarImageView
     }()
     let fullNameLabel: UILabel = {
@@ -48,6 +47,7 @@ class ProfileHeaderView: UIView {
         let spacerView = UIView(frame:CGRect(x:0, y:0, width:10, height:10))
         statusTextField.leftViewMode = .always
         statusTextField.leftView = spacerView
+        statusTextField.addTarget(nil, action: #selector(statusTextChanged(_:)), for: .editingChanged)
         return statusTextField
     }()
     let setStatusButton: UIButton = {
@@ -65,6 +65,7 @@ class ProfileHeaderView: UIView {
                                             blue: 0/255,
                                             alpha: 1)
         setStatusButton.layer.shadowOpacity = 0.7
+        setStatusButton.addTarget(nil, action: #selector(buttonPressed), for: .touchUpInside)
         return setStatusButton
     }()
     private var statusLabel: UILabel = {
@@ -76,17 +77,15 @@ class ProfileHeaderView: UIView {
         return statusLabel
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(reuseIdentifier: String?) {
+        super.init(reuseIdentifier: reuseIdentifier)
         self.addSubview(avatarImageView)
         self.addSubview(fullNameLabel)
         self.addSubview(statusLabel)
         self.addSubview(setStatusButton)
         self.addSubview(statusTextField)
-        setStatusButton.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
-        statusTextField.addTarget(self, action: #selector(statusTextChanged(_:)), for: .editingChanged)
         
-        setuoConstraints()
+        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
@@ -99,42 +98,25 @@ class ProfileHeaderView: UIView {
         setStatusButton.layer.cornerRadius = 10
     }
     
-    private func setuoConstraints() {
+    private func setupConstraints() {
         
         let safeAreaLayoutGuide = self.safeAreaLayoutGuide
         
         NSLayoutConstraint.activate([
-            avatarImageView.topAnchor.constraint(equalTo: 
-                                            self.safeAreaLayoutGuide.topAnchor,
-                                            constant: 16),
-            avatarImageView.leadingAnchor.constraint(equalTo: 
-                                            self.leadingAnchor,
-                                            constant: 16),
+            avatarImageView.topAnchor.constraint(equalTo:self.safeAreaLayoutGuide.topAnchor,constant: 16),
+            avatarImageView.leadingAnchor.constraint(equalTo:self.leadingAnchor,constant: 16),
             avatarImageView.heightAnchor.constraint(equalToConstant: 100),
             avatarImageView.widthAnchor.constraint(equalToConstant: 100),
         
-            fullNameLabel.topAnchor.constraint(equalTo: 
-                                            self.safeAreaLayoutGuide.topAnchor,
-                                            constant: 27),
-            fullNameLabel.leadingAnchor.constraint(equalTo:
-                                            avatarImageView.trailingAnchor,
-                                            constant: 25),
-            setStatusButton.topAnchor.constraint(equalTo:
-                                            avatarImageView.bottomAnchor,
-                                            constant: 37),
-            setStatusButton.trailingAnchor.constraint(equalTo:
-                                            self.trailingAnchor,
-                                            constant: -16),
-            setStatusButton.leadingAnchor.constraint(equalTo: 
-                                            self.leadingAnchor,
-                                            constant: 16),
+            fullNameLabel.topAnchor.constraint(equalTo:self.safeAreaLayoutGuide.topAnchor,constant: 27),
+            fullNameLabel.leadingAnchor.constraint(equalTo:avatarImageView.trailingAnchor,constant: 25),
+            setStatusButton.topAnchor.constraint(equalTo:avatarImageView.bottomAnchor,constant: 37),
+            setStatusButton.trailingAnchor.constraint(equalTo:self.trailingAnchor,constant: -16),
+            setStatusButton.leadingAnchor.constraint(equalTo:self.leadingAnchor,constant: 16),
+            setStatusButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -16),
             setStatusButton.heightAnchor.constraint(equalToConstant: 50),
-            statusLabel.bottomAnchor.constraint(equalTo:
-                                            setStatusButton.topAnchor,
-                                            constant: -55),
-            statusLabel.leadingAnchor.constraint(equalTo:
-                                            avatarImageView.trailingAnchor,
-                                            constant: 25),
+            statusLabel.bottomAnchor.constraint(equalTo:setStatusButton.topAnchor,constant: -55),
+            statusLabel.leadingAnchor.constraint(equalTo:avatarImageView.trailingAnchor,constant: 25),
             
             statusTextField.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 5),
             statusTextField.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 25),
