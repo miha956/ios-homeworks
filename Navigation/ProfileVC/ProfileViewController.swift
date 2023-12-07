@@ -73,6 +73,8 @@ class ProfileViewController: UIViewController {
 extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     
     private func tuneTableView() {
+        
+        tableView.allowsSelection = false
         tableView.rowHeight = UITableView.automaticDimension
         tableView.register(
             PostTableViewCell.self,

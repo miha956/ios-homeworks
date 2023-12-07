@@ -17,6 +17,7 @@ class PostTableViewCell: UITableViewCell {
         authorLabel.font = .systemFont(ofSize: 20, weight: .bold)
         authorLabel.textColor = .black
         authorLabel.numberOfLines = 2
+        authorLabel.sizeToFit()
         return authorLabel
     }()
     private let postImage: UIImageView = {
@@ -119,7 +120,7 @@ class PostTableViewCell: UITableViewCell {
         postImage.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant: 12),
         postImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
         postImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-        postImage.heightAnchor.constraint(equalToConstant: 300), // change
+        postImage.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.width),
         
         descriptionLabel.topAnchor.constraint(equalTo: postImage.bottomAnchor, constant: 16),
         descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
@@ -133,19 +134,6 @@ class PostTableViewCell: UITableViewCell {
         viewsStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
         viewsStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
         ])
-        
-//        for view in likesStackView.arrangedSubviews {
-//            NSLayoutConstraint.activate([
-//                view.leadingAnchor.constraint(equalTo: likesStackView.leadingAnchor),
-//            view.trailingAnchor.constraint(equalTo: likesStackView.trailingAnchor)
-//            ])
-//        }
-//        for view in viewsStackView.arrangedSubviews {
-//            NSLayoutConstraint.activate([
-//            view.leadingAnchor.constraint(equalTo: viewsStackView.leadingAnchor),
-//            view.trailingAnchor.constraint(equalTo: viewsStackView.trailingAnchor)
-//            ])
-//        }
         
     }
     
