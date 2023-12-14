@@ -12,20 +12,19 @@ class ProfileViewController: UIViewController {
     // MARK: - Data
     
     fileprivate let data = Post.make()
-        
+    fileprivate let userData = User.make()
     
     // MARK: - Subviews
     
     private lazy var tableView: UITableView = {
-        let tableView = UITableView(frame: .zero, style: .plain)
+        let tableView = UITableView(frame: .zero, style: .grouped)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
     }()
-    
     private enum CellReuseID: String {
-            case base = "PostTableViewCell_ReuseID"
+            case postCell = "PostTableViewCell_ReuseID"
+            case photosCell = "PhotosTableViewCell_ReuseID"
         }
-        
     private enum HeaderFooterReuseID: String {
             case base = "ProfileTableHederView_ReuseID"
         }
@@ -41,7 +40,9 @@ class ProfileViewController: UIViewController {
         setupConstraints()
     }
     
-    
+    override func viewWillAppear(_ animated: Bool) {
+        navigationController?.navigationBar.isHidden = true
+    }
     
     // MARK: - private
     
@@ -74,11 +75,16 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     
     private func tuneTableView() {
         
-        tableView.allowsSelection = false
+        tableView.allowsSelection = true
+        
         tableView.rowHeight = UITableView.automaticDimension
         tableView.register(
             PostTableViewCell.self,
-            forCellReuseIdentifier: CellReuseID.base.rawValue
+            forCellReuseIdentifier: CellReuseID.postCell.rawValue
+                )
+        tableView.register(
+            PhotosTableViewCell.self,
+            forCellReuseIdentifier: CellReuseID.photosCell.rawValue
                 )
         tableView.register(
             ProfileHeaderView.self,
@@ -95,27 +101,57 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
             ProfileHeaderView else {
             fatalError("could not dequeueReusableCell")
         }
-        
-        return headerView
+        if section == 0 {
+            return headerView
+        } else {
+            return nil
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        1
+        2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        data.count
+        switch section {
+        case 0:
+            return 1
+        case 1:
+            return data.count
+        default:
+            return 0
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(
-                withIdentifier: CellReuseID.base.rawValue,
+        guard let postCell = tableView.dequeueReusableCell(
+                withIdentifier: CellReuseID.postCell.rawValue,
                 for: indexPath) as? PostTableViewCell else {
                 fatalError("could not dequeueReusableCell")
         }
+        guard let photosCell = tableView.dequeueReusableCell(
+                withIdentifier: CellReuseID.photosCell.rawValue,
+                for: indexPath) as? PhotosTableViewCell else {
+                fatalError("could not dequeueReusableCell")
+        }
+        postCell.update(data[indexPath.row])
+        photosCell.updateData(photos: userData.photos)
         
-        cell.update(data[indexPath.row])
-        
-        return cell
+        switch indexPath.section {
+        case 0:
+            return photosCell
+        case 1:
+            return postCell
+        default:
+            return UITableViewCell(style: .default, reuseIdentifier: "base")
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 0 {
+            let vc = PhotosViewController()
+            navigationController?.pushViewController(vc, animated: true)
+        }
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
