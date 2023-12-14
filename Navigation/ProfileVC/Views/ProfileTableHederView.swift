@@ -10,17 +10,21 @@ import UIKit
 
 class ProfileHeaderView: UITableViewHeaderFooterView {
     
-    let avatarImageView: UIImageView = {
+    // MARK: - Subviews
+    
+    let avatarImageView: UIImageView = { 
         let avatarImageView = UIImageView()
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
         avatarImageView.image = UIImage(named: "cat")
         avatarImageView.contentMode = .scaleAspectFill
         avatarImageView.layer.borderWidth = 3
-        avatarImageView.layer.borderColor = CGColor(red: 255/255,
-                                                 green: 255/255,
-                                                 blue: 255/255,
-                                                 alpha: 1)
+        avatarImageView.layer.borderColor = UIColor.white.cgColor
         avatarImageView.clipsToBounds = true
+        let avatarTap = UITapGestureRecognizer(
+            target: ProfileHeaderView.self,
+            action: #selector(expandAvatar))
+        avatarTap.numberOfTapsRequired = 1
+        avatarImageView.addGestureRecognizer(avatarTap)
         return avatarImageView
     }()
     let fullNameLabel: UILabel = {
@@ -77,15 +81,14 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         return statusLabel
     }()
     
+    // MARK: - Lifecycle
+    
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
-        self.addSubview(avatarImageView)
-        self.addSubview(fullNameLabel)
-        self.addSubview(statusLabel)
-        self.addSubview(setStatusButton)
-        self.addSubview(statusTextField)
         
+        addSubviews()
         setupConstraints()
+        self.isUserInteractionEnabled = true
     }
     
     required init?(coder: NSCoder) {
@@ -96,6 +99,32 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         super.layoutSubviews()
         avatarImageView.layer.cornerRadius = avatarImageView.frame.height / 2
         setStatusButton.layer.cornerRadius = 10
+    }
+    
+    // MARK: - Actions
+    
+    @objc func buttonPressed() {
+        //print(statusLabel.text)
+    }
+    
+    @objc func statusTextChanged(_ textField: UITextField) {
+        guard let text = textField.text else { return }
+        statusLabel.text = text
+    }
+    
+    @objc func expandAvatar() {
+        print("tap avatar")
+    }
+    
+    // MARK: - Private
+    
+    private func addSubviews() {
+        
+        self.addSubview(avatarImageView)
+        self.addSubview(fullNameLabel)
+        self.addSubview(statusLabel)
+        self.addSubview(setStatusButton)
+        self.addSubview(statusTextField)
     }
     
     private func setupConstraints() {
@@ -124,15 +153,5 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
             statusTextField.heightAnchor.constraint(equalToConstant: 40)
             
         ])
-    }
-    
-    @objc func buttonPressed() {
-        //print(statusLabel.text)
-
-    }
-    
-    @objc func statusTextChanged(_ textField: UITextField) {
-        guard let text = textField.text else { return }
-        statusLabel.text = text
     }
 }

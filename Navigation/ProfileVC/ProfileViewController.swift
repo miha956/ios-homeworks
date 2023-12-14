@@ -44,6 +44,10 @@ class ProfileViewController: UIViewController {
         navigationController?.navigationBar.isHidden = true
     }
     
+    // MARK: - Actions
+    
+
+    
     // MARK: - private
     
     private func setupView() {
@@ -54,7 +58,7 @@ class ProfileViewController: UIViewController {
         view.addSubview(tableView)
     }
     
-   private func setupConstraints() {
+    private func setupConstraints() {
         
         let safeAreaLayoutGuide = view.safeAreaLayoutGuide
         
@@ -100,6 +104,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
             withIdentifier: HeaderFooterReuseID.base.rawValue) as? 
             ProfileHeaderView else {
             fatalError("could not dequeueReusableCell")
+            
         }
         if section == 0 {
             return headerView
