@@ -12,7 +12,7 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
     
     // MARK: - Subviews
     
-    private lazy var avatarImageView: UIImageView = {
+    lazy var avatarImageView: UIImageView = {
         let avatarImageView = UIImageView()
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
         avatarImageView.image = UIImage(named: "cat")
@@ -22,7 +22,7 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         avatarImageView.clipsToBounds = true
         let avatarTap = UITapGestureRecognizer(
             target: self,
-            action: #selector(avatarTapAnimation))
+            action: #selector(avatarOpened))
         avatarTap.numberOfTapsRequired = 1
         avatarImageView.addGestureRecognizer(avatarTap)
         avatarImageView.isUserInteractionEnabled = true
@@ -73,7 +73,7 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         setStatusButton.addTarget(nil, action: #selector(buttonPressed), for: .touchUpInside)
         return setStatusButton
     }()
-    private var statusLabel: UILabel = {
+    var statusLabel: UILabel = {
         let statusLabel = UILabel()
         statusLabel.text = "Waiting for something..."
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -81,7 +81,25 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         statusLabel.textColor = .gray
         return statusLabel
     }()
-    
+    private lazy var backView: UIView = {
+        let backView = UIView(frame: CGRect(x: 0,
+                                            y: 0,
+                                            width: UIScreen.main.bounds.width,
+                                            height: UIScreen.main.bounds.height))
+        backView.backgroundColor = .white
+        backView.alpha = 0
+        return backView
+    }()
+    private lazy var closeAvatarButton: UIButton = {
+        let closeAvatarButton = UIButton(type: .system)
+        closeAvatarButton.translatesAutoresizingMaskIntoConstraints = false
+        closeAvatarButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        closeAvatarButton.tintColor = .black
+        closeAvatarButton.alpha = 0
+        closeAvatarButton.addTarget(self, action: #selector(avatarClosed), for: .touchUpInside)
+        return closeAvatarButton
+    }()
+
     // MARK: - Lifecycle
     
     override init(reuseIdentifier: String?) {
@@ -112,53 +130,44 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         statusLabel.text = text
     }
     
-    @objc func avatarTapAnimation() {
+    @objc func avatarOpened(target: UIView) {
         
-        let backView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
-        backView.backgroundColor = .white
-        backView.alpha = 0
-        self.addSubview(backView)
-        self.sendSubviewToBack(backView)
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.post(name: Notification.Name("avatarOpened"), object: nil)
         
-        var centerOrigin = avatarImageView.center
-        
-        UIView.animateKeyframes(withDuration: 0.5,
-                                delay: 0.2,
-                                options: .calculationModeLinear,
-                                animations: {
-            UIView.addKeyframe(
-                withRelativeStartTime: 0,
-                relativeDuration: 0.25
-            ) {
-                self.avatarImageView.layer.borderWidth = 0
-                self.avatarImageView.layer.borderColor = UIColor.clear.cgColor
-                self.avatarImageView.layer.cornerRadius = 0
-                self.avatarImageView.clipsToBounds = false
-                self.avatarImageView.transform = CGAffineTransform(
-                    scaleX: 3.0,
-                    y: 3.0
-                )
-                self.avatarImageView.center = CGPoint(
-                    x: backView.center.x,
-                    y: backView.center.y
-                )
+        UIView.animate(
+            withDuration: 0.1,
+                    delay: 0,
+                    options: .curveLinear
+                ) {
+                    self.backView.alpha = 1
             }
-            UIView.addKeyframe(
-                withRelativeStartTime: 0.25,
-                relativeDuration: 1) {
-                    backView.alpha = 1
-                    self.fullNameLabel.isHidden = true
-                    self.setStatusButton.isHidden = true
-                    self.statusLabel.isHidden = true
-                    self.statusTextField.isHidden = true
-                }
-            
-        },
-                                completion: { state in
-            print("avatar aniimation finish")
-        })
-        
-        
+        UIView.animate(
+            withDuration: 0.5,
+                    delay: 0.3,
+                    options: .curveLinear
+                ) {
+                    self.closeAvatarButton.alpha = 1
+            }
+    }
+    
+    @objc func avatarClosed() {
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.post(name: Notification.Name("avatarClosed"), object: nil)
+        UIView.animate(
+            withDuration: 0.1,
+            delay: 0.0,
+                    options: .curveLinear
+                ) {
+                    self.closeAvatarButton.alpha = 0
+            }
+        UIView.animate(
+            withDuration: 0.1,
+                    delay: 0,
+                    options: .curveLinear
+                ) {
+                    self.backView.alpha = 0
+            }
     }
     
     // MARK: - Private
@@ -170,6 +179,9 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         self.addSubview(statusLabel)
         self.addSubview(setStatusButton)
         self.addSubview(statusTextField)
+        self.addSubview(backView)
+        self.sendSubviewToBack(backView)
+        self.addSubview(closeAvatarButton)
     }
     
     private func setupConstraints() {
@@ -195,7 +207,11 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
             statusTextField.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 5),
             statusTextField.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 25),
             statusTextField.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            statusTextField.heightAnchor.constraint(equalToConstant: 40)
+            statusTextField.heightAnchor.constraint(equalToConstant: 40),
+            
+            closeAvatarButton.topAnchor.constraint(equalTo: backView.topAnchor, constant: 20),
+            closeAvatarButton.trailingAnchor.constraint(equalTo: backView.trailingAnchor, constant: -20)
+            
             
         ])
     }
