@@ -10,6 +10,10 @@ import UIKit
 
 class ProfileHeaderView: UITableViewHeaderFooterView {
     
+    // MARK: - Properties
+    
+    private var avatarOriginPoint = CGPoint()
+    
     // MARK: - Subviews
     
     lazy var avatarImageView: UIImageView = {
@@ -17,6 +21,7 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
         avatarImageView.image = UIImage(named: "cat")
         avatarImageView.contentMode = .scaleAspectFill
+        avatarImageView.layer.cornerRadius = 50
         avatarImageView.layer.borderWidth = 3
         avatarImageView.layer.borderColor = UIColor.white.cgColor
         avatarImageView.clipsToBounds = true
@@ -60,6 +65,7 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         setStatusButton.translatesAutoresizingMaskIntoConstraints = false
         setStatusButton.setTitle("Show status", for: .normal)
         setStatusButton.setTitleColor(.white, for: .normal)
+        setStatusButton.layer.cornerRadius = 10
         setStatusButton.backgroundColor = .systemBlue
         setStatusButton.layer.shadowOffset = CGSize(
                                             width: 4,
@@ -81,14 +87,15 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         statusLabel.textColor = .gray
         return statusLabel
     }()
-    private lazy var backView: UIView = {
-        let backView = UIView(frame: CGRect(x: 0,
+    private lazy var avatarBackground: UIView = {
+        let avatarBackground = UIView(frame: CGRect(x: 0,
                                             y: 0,
                                             width: UIScreen.main.bounds.width,
                                             height: UIScreen.main.bounds.height))
-        backView.backgroundColor = .white
-        backView.alpha = 0
-        return backView
+        avatarBackground.backgroundColor = UIColor(red: 242/255, green: 242/255, blue: 247/255, alpha: 1)
+        avatarBackground.isHidden = true
+        avatarBackground.alpha = 0
+        return avatarBackground
     }()
     private lazy var closeAvatarButton: UIButton = {
         let closeAvatarButton = UIButton(type: .system)
@@ -115,8 +122,7 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        avatarImageView.layer.cornerRadius = avatarImageView.frame.height / 2
-        setStatusButton.layer.cornerRadius = 10
+        
     }
     
     // MARK: - Actions
@@ -132,55 +138,54 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
     
     @objc func avatarOpened(target: UIView) {
         
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.post(name: Notification.Name("avatarOpened"), object: nil)
+        avatarImageView.isUserInteractionEnabled = false
         
-        UIView.animate(
-            withDuration: 0.1,
-                    delay: 0,
-                    options: .curveLinear
-                ) {
-                    self.backView.alpha = 1
-            }
-        UIView.animate(
-            withDuration: 0.5,
-                    delay: 0.3,
-                    options: .curveLinear
-                ) {
-                    self.closeAvatarButton.alpha = 1
-            }
+        ProfileViewController.tableView.isScrollEnabled = false
+        ProfileViewController.tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.isUserInteractionEnabled = false
+        
+        avatarOriginPoint = avatarImageView.center
+                let scale = UIScreen.main.bounds.width / avatarImageView.bounds.width
+                
+                UIView.animate(withDuration: 0.5) {
+                    self.avatarImageView.center = CGPoint(x: UIScreen.main.bounds.midX,
+                                                          y: UIScreen.main.bounds.midY - self.avatarOriginPoint.y)
+                    self.avatarImageView.transform = CGAffineTransform(scaleX: scale, y: scale)
+                    self.avatarImageView.layer.cornerRadius = 0
+                    self.avatarBackground.isHidden = false
+                    self.avatarBackground.alpha = 0.7
+                } completion: { _ in
+                    UIView.animate(withDuration: 0.3) {
+                        self.closeAvatarButton.alpha = 1
+                    }
+                }
     }
     
     @objc func avatarClosed() {
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.post(name: Notification.Name("avatarClosed"), object: nil)
-        UIView.animate(
-            withDuration: 0.1,
-            delay: 0.0,
-                    options: .curveLinear
-                ) {
-                    self.closeAvatarButton.alpha = 0
-            }
-        UIView.animate(
-            withDuration: 0.1,
-                    delay: 0,
-                    options: .curveLinear
-                ) {
-                    self.backView.alpha = 0
-            }
+        
+        UIImageView.animate(withDuration: 0.5) {
+                    UIImageView.animate(withDuration: 0.5) {
+                        self.closeAvatarButton.alpha = 0
+                        self.avatarImageView.center = self.avatarOriginPoint
+                        self.avatarImageView.transform = CGAffineTransform(scaleX: 1, y: 1)
+                        self.avatarImageView.layer.cornerRadius = self.avatarImageView.frame.width / 2
+                        self.avatarBackground.alpha = 0
+                    }
+                } completion: { _ in
+                    ProfileViewController.tableView.isScrollEnabled = true
+                    ProfileViewController.tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.isUserInteractionEnabled = true
+                    self.avatarImageView.isUserInteractionEnabled = true
+                }
     }
     
     // MARK: - Private
     
     private func addSubviews() {
-        
-        self.addSubview(avatarImageView)
         self.addSubview(fullNameLabel)
         self.addSubview(statusLabel)
         self.addSubview(setStatusButton)
         self.addSubview(statusTextField)
-        self.addSubview(backView)
-        self.sendSubviewToBack(backView)
+        self.addSubview(avatarBackground)
+        self.addSubview(avatarImageView)
         self.addSubview(closeAvatarButton)
     }
     
@@ -209,8 +214,8 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
             statusTextField.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16),
             statusTextField.heightAnchor.constraint(equalToConstant: 40),
             
-            closeAvatarButton.topAnchor.constraint(equalTo: backView.topAnchor, constant: 20),
-            closeAvatarButton.trailingAnchor.constraint(equalTo: backView.trailingAnchor, constant: -20)
+            closeAvatarButton.topAnchor.constraint(equalTo: avatarBackground.topAnchor, constant: 20),
+            closeAvatarButton.trailingAnchor.constraint(equalTo: avatarBackground.trailingAnchor, constant: -20)
             
             
         ])
